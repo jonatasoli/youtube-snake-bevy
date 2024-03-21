@@ -3,7 +3,7 @@ name: Rust
 on:
   push:
     branches: ["main"]
-  pull-request:
+  pull_request:
     branches: ["*"]
 
 env:
@@ -16,7 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: install dependencies
-      run: sudo apt update; sudo apt install --no-install-recomends libasound2-dev libudev-dev libwayland-dev libxkbcommon-dev
+      run: sudo apt update; sudo apt install --no-install-recommends libasound2-dev libudev-dev libwayland-dev libxkbcommon-dev
     - name: cargo build
       run: cargo build --release --verbose
 
@@ -27,9 +27,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: install dependencies
-      run: sudo apt update; sudo apt install --no-install-recomends libasound2-dev libudev-dev libwayland-dev libxkbcommon-dev
+      run: sudo apt update; sudo apt install --no-install-recommends libasound2-dev libudev-dev libwayland-dev libxkbcommon-dev
     - name: run tests
-      run: cargo test -- --no-capture
+      run: cargo test -- --nocapture
     
 
   fmt:
@@ -46,7 +46,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: install dependencies
-      run: sudo apt update; sudo apt install --no-install-recomends libasound2-dev libudev-dev libwayland-dev libxkbcommon-dev
+      run: sudo apt update; sudo apt install --no-install-recommends libasound2-dev libudev-dev libwayland-dev libxkbcommon-dev
     - name: install clippy
       run: rustup component add clippy
     - name: run clippy
