@@ -22,20 +22,20 @@ pub fn spawn_snake(mut commands: Commands) {
 }
 
 pub fn snake_movement(
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     mut head_positions: Query<(&SnakeHead, &mut Transform)>,
 ) {
     for (_head, mut transform) in head_positions.iter_mut() {
-        if keyboard_input.pressed(KeyCode::W) {
+        if keyboard_input.pressed(KeyCode::KeyW) {
             transform.translation.y += 1.;
         }
-        if keyboard_input.pressed(KeyCode::S) {
+        if keyboard_input.pressed(KeyCode::KeyS) {
             transform.translation.y -= 1.;
         }
-        if keyboard_input.pressed(KeyCode::D) {
+        if keyboard_input.pressed(KeyCode::KeyD) {
             transform.translation.x += 1.;
         }
-        if keyboard_input.pressed(KeyCode::A) {
+        if keyboard_input.pressed(KeyCode::KeyA) {
             transform.translation.x -= 1.;
         }
     }
@@ -68,8 +68,8 @@ mod test {
         app.add_systems(Startup, spawn_snake)
             .add_systems(Update, snake_movement);
 
-        let mut input = Input::<KeyCode>::default();
-        input.press(KeyCode::W);
+        let mut input = ButtonInput::<KeyCode>::default();
+        input.press(KeyCode::KeyW);
         app.insert_resource(input);
 
         // Act
@@ -93,8 +93,8 @@ mod test {
         app.add_systems(Startup, spawn_snake)
             .add_systems(Update, snake_movement);
 
-        let mut input = Input::<KeyCode>::default();
-        input.press(KeyCode::W);
+        let mut input = ButtonInput::<KeyCode>::default();
+        input.press(KeyCode::KeyW);
         app.insert_resource(input);
 
         // Act
@@ -109,8 +109,8 @@ mod test {
         });
 
         // Arrange
-        let mut input = Input::<KeyCode>::default();
-        input.press(KeyCode::D);
+        let mut input = ButtonInput::<KeyCode>::default();
+        input.press(KeyCode::KeyD);
         app.insert_resource(input);
 
         // Act
@@ -134,14 +134,14 @@ mod test {
             .add_systems(Update, snake_movement);
 
         // Movimenta para baixo
-        let mut input = Input::<KeyCode>::default();
-        input.press(KeyCode::S);
+        let mut input = ButtonInput::<KeyCode>::default();
+        input.press(KeyCode::KeyS);
         app.insert_resource(input);
         app.update();
 
         // Movimenta para esquerda
-        let mut input = Input::<KeyCode>::default();
-        input.press(KeyCode::A);
+        let mut input = ButtonInput::<KeyCode>::default();
+        input.press(KeyCode::KeyA);
         app.insert_resource(input);
         app.update();
 
