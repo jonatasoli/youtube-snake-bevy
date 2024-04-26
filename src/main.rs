@@ -12,6 +12,7 @@ fn main() {
         .add_systems(Startup, spawn_snake)
         .add_plugins(DefaultPlugins)
         .add_systems(Update, snake_movement)
+        .add_systems(PostUpdate, (grid::position_translation, grid::size_scaling))
         .run();
 }
 

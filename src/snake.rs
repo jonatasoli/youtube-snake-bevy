@@ -4,7 +4,7 @@ use bevy::prelude::*;
 const SNAKE_HEAD_COLOR: Color = Color::rgb(0.7, 0.7, 0.7);
 
 #[derive(Component)]
-pub struct SnakeHead;
+pub struct Head;
 
 pub fn spawn_snake(mut commands: Commands) {
     commands
@@ -19,27 +19,27 @@ pub fn spawn_snake(mut commands: Commands) {
             },
             ..default()
         })
-        .insert(SnakeHead)
+        .insert(Head)
         .insert(Position { x: 5, y: 5 })
         .insert(Size::square(0.8));
 }
 
 pub fn snake_movement(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut head_positions: Query<(&SnakeHead, &mut Transform)>,
+    mut head_positions: Query<&mut Position, With<Head>>,
 ) {
-    for (_head, mut transform) in head_positions.iter_mut() {
+    for mut position in head_positions.iter_mut() {
         if keyboard_input.pressed(KeyCode::KeyW) {
-            transform.translation.y += 1.;
+            position.y += 1;
         }
         if keyboard_input.pressed(KeyCode::KeyS) {
-            transform.translation.y -= 1.;
+            position.y -= 1;
         }
         if keyboard_input.pressed(KeyCode::KeyD) {
-            transform.translation.x += 1.;
+            position.x += 1;
         }
         if keyboard_input.pressed(KeyCode::KeyA) {
-            transform.translation.x -= 1.;
+            position.x -= 1;
         }
     }
 }
@@ -56,7 +56,7 @@ mod test {
         app.update();
 
         // Act
-        let mut query = app.world.query_filtered::<Entity, With<SnakeHead>>();
+        let mut query = app.world.query_filtered::<Entity, With<Head>>();
 
         // Assert
         assert_eq!(query.iter(&app.world).count(), 1);
@@ -66,7 +66,7 @@ mod test {
     fn snake_head_has_moved_up() {
         // Arrange
         let mut app = App::new();
-        let default_transform = Transform { ..default() };
+        let default_position = Position { x: 5, y: 6 };
 
         app.add_systems(Startup, spawn_snake)
             .add_systems(Update, snake_movement);
@@ -77,12 +77,11 @@ mod test {
 
         // Act
         app.update();
-        let mut query = app.world.query::<(&SnakeHead, &Transform)>();
+        let mut query = app.world.query::<(&Head, &Position)>();
 
         // Assert
-        query.iter(&app.world).for_each(|(_head, transform)| {
-            assert!(default_transform.translation.y < transform.translation.y);
-            assert_eq!(default_transform.translation.x, transform.translation.x);
+        query.iter(&app.world).for_each(|(_head, position)| {
+            assert_eq!(&default_position, position);
         })
     }
 
@@ -90,8 +89,7 @@ mod test {
     fn snake_head_has_moved_up_and_right() {
         // Arrange
         let mut app = App::new();
-        let default_transform = Transform { ..default() };
-        let mut up_transform = Transform { ..default() };
+        let up_position = Position { x: 5, y: 6 };
 
         app.add_systems(Startup, spawn_snake)
             .add_systems(Update, snake_movement);
@@ -102,28 +100,26 @@ mod test {
 
         // Act
         app.update();
-        let mut query = app.world.query::<(&SnakeHead, &Transform)>();
+        let mut query = app.world.query::<(&Head, &Position)>();
 
         // Assert
-        query.iter(&app.world).for_each(|(_head, transform)| {
-            assert!(default_transform.translation.y < transform.translation.y);
-            assert_eq!(default_transform.translation.x, transform.translation.x);
-            up_transform = transform.to_owned();
+        query.iter(&app.world).for_each(|(_head, position)| {
+            assert_eq!(position, &up_position);
         });
 
         // Arrange
         let mut input = ButtonInput::<KeyCode>::default();
         input.press(KeyCode::KeyD);
         app.insert_resource(input);
+        let up_right_position = Position { x: 6, y: 6 };
 
         // Act
         app.update();
-        let mut query = app.world.query::<(&SnakeHead, &Transform)>();
+        let mut query = app.world.query::<(&Head, &Position)>();
 
         // Assert
-        query.iter(&app.world).for_each(|(_head, transform)| {
-            assert_eq!(up_transform.translation.y, transform.translation.y);
-            assert!(up_transform.translation.x < transform.translation.x);
+        query.iter(&app.world).for_each(|(_head, position)| {
+            assert_eq!(&up_right_position, position);
         })
     }
 
@@ -131,7 +127,7 @@ mod test {
     fn snake_head_moves_down_and_left() {
         // Setup
         let mut app = App::new();
-        let default_transform = Transform { ..default() };
+        let down_left_position = Position { x: 4, y: 4 };
 
         app.add_systems(Startup, spawn_snake)
             .add_systems(Update, snake_movement);
@@ -149,10 +145,9 @@ mod test {
         app.update();
 
         // Assert
-        let mut query = app.world.query::<(&SnakeHead, &Transform)>();
-        query.iter(&app.world).for_each(|(_head, transform)| {
-            assert!(default_transform.translation.y > transform.translation.y);
-            assert!(default_transform.translation.x > transform.translation.x);
+        let mut query = app.world.query::<(&Head, &Position)>();
+        query.iter(&app.world).for_each(|(_head, position)| {
+            assert_eq!(&down_left_position, position);
         })
     }
 }

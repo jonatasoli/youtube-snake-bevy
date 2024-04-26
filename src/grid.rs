@@ -1,12 +1,12 @@
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 
-use crate::components::Size;
+use crate::components::{Position, Size};
 
 const GRID_WIDTH: u8 = 10;
 const GRID_HEIGHT: u8 = 10;
 
-fn size_scaling(
+pub fn size_scaling(
     primary_window: Query<&Window, With<PrimaryWindow>>,
     mut q: Query<(&Size, &mut Transform)>,
 ) {
@@ -24,9 +24,27 @@ fn scale_size(transform: &mut Transform, sprite_size: &Size, window: &Window) {
     );
 }
 
+pub fn position_translation(
+    primary_window: Query<&Window, With<PrimaryWindow>>,
+    mut q: Query<(&Position, &mut Transform)>,
+) {
+    let window = primary_window.get_single().unwrap();
+    for (pos, mut transform) in &mut q.iter_mut() {
+        translate_window(transform.as_mut(), pos, window);
+    }
+}
+
 fn convert(pos: f32, bound_window: f32, grid_side_lenght: f32) -> f32 {
     let tile_size = bound_window / grid_side_lenght;
     pos / grid_side_lenght * bound_window - (bound_window / 2.) + (tile_size / 2.)
+}
+
+fn translate_window(transform: &mut Transform, pos: &Position, window: &Window) {
+    transform.translation = Vec3::new(
+        convert(pos.x as f32, window.width(), GRID_WIDTH as f32),
+        convert(pos.y as f32, window.height(), GRID_HEIGHT as f32),
+        0.0,
+    )
 }
 
 #[cfg(test)]
@@ -34,6 +52,28 @@ mod test {
     use super::*;
     use crate::components::Size;
     use bevy::window::WindowResolution;
+
+    #[test]
+    fn translate_position_to_window() {
+        // Arrange
+        let position = Position { x: 2, y: 8 };
+        let mut default_transform = Transform::default();
+        let expect = Transform {
+            translation: Vec3::new(-100., 140., 0.),
+            ..default()
+        };
+
+        let window = Window {
+            resolution: WindowResolution::new(400., 400.),
+            ..default()
+        };
+
+        // Act
+        translate_window(&mut default_transform, &position, &window);
+
+        // Assert
+        assert_eq!(default_transform, expect)
+    }
 
     #[test]
     fn transform_has_correct_scale_for_window() {
