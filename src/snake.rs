@@ -1,3 +1,4 @@
+use crate::components::{Position, Size};
 use bevy::prelude::*;
 
 const SNAKE_HEAD_COLOR: Color = Color::rgb(0.7, 0.7, 0.7);
@@ -18,7 +19,9 @@ pub fn spawn_snake(mut commands: Commands) {
             },
             ..default()
         })
-        .insert(SnakeHead);
+        .insert(SnakeHead)
+        .insert(Position { x: 5, y: 5 })
+        .insert(Size::square(0.8));
 }
 
 pub fn snake_movement(

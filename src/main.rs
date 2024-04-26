@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 
+pub mod components;
+mod grid;
 mod snake;
 
 use snake::{snake_movement, spawn_snake};
