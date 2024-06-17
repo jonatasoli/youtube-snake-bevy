@@ -3,8 +3,8 @@ use bevy::window::PrimaryWindow;
 
 use crate::components::{Position, Size};
 
-const GRID_WIDTH: u8 = 10;
-const GRID_HEIGHT: u8 = 10;
+pub(crate) const GRID_WIDTH: u16 = 10;
+pub(crate) const GRID_HEIGHT: u16 = 10;
 
 pub fn size_scaling(
     primary_window: Query<&Window, With<PrimaryWindow>>,
